@@ -1,12 +1,17 @@
 import Users from "../../models/users.js";
 import Projects from "../../models/projects.js";
+import ToDos from "../../models/todos.js";
 
 const addProject = async (req, res) => {
-  const { title } = req.body;
+  const { title, todo } = req.body;
   const userId = req.userId;
 
   if (!title) {
-    res.status(400).json({ message: "Title is mandatory" });
+    res.status(400).json({ message: "Please add a title" });
+    return;
+  }
+  if (!todo || todo.length === 0) {
+    res.status(400).json({ message: "Add at least 1 todo" });
     return;
   }
 
@@ -16,9 +21,17 @@ const addProject = async (req, res) => {
     return;
   }
 
+  const todos = await Promise.all(
+    todo.map(async (todoItem) => {
+      const newTodo = new ToDos({ description: todoItem });
+      const savedTodo = await newTodo.save();
+      return savedTodo._id;
+    })
+  );
+
   const newProject = new Projects({
     title,
-    todos: [],
+    todos,
   });
 
   try {
