@@ -15,6 +15,17 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Check if the token is expired
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (decoded.exp <= currentTimestamp) {
+      console.error("Error: Token expired");
+      return res
+        .status(401)
+        .json({ message: "Token expired. Please login again." });
+    }
+
+    console.log("decoded: ", decoded);
+
     req.userId = decoded._id;
 
     next();
