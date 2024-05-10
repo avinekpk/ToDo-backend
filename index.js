@@ -1,5 +1,6 @@
 import express from "express";
 import { config } from "dotenv";
+import cors from "cors";
 import connectDb from "./src/config/dbConnection.js";
 import authRoutes from "./src/routes/auth.js";
 import projectRoutes from "./src/routes/projects.js";
@@ -10,6 +11,7 @@ config();
 connectDb();
 
 const app = express();
+app.use(cors());
 app.use(apiLogger);
 const port = process.env.PORT || 5000;
 
